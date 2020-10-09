@@ -75,7 +75,11 @@ if __name__ == "__main__":
 
 	arg_input = args.input
 	arg_output = args.output
-
+	
+	if os.path.isdir(arg_output):
+		progname_input = os.path.basename(arg_input)
+		arg_output += "/" + progname_input
+	
 	build_directory = "/tmp/{}_{}".format(PROGNAME, uuid.uuid4().hex)
 
 	if os.path.isdir(arg_input):
