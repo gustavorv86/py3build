@@ -68,9 +68,9 @@ def build_from_python_project(project_directory: str, build_directory: str, bin_
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Byte compile and binary application package Python 3 source files")
-	parser.add_argument("-i", "--input", type=str, required=True, help="Input sources directory with __main__.py application file")
-	parser.add_argument("-o", "--output", type=str, required=True, help="Output zip binary application file")
+	parser = argparse.ArgumentParser(description="Create a zipapp from Python 3 projects")
+	parser.add_argument("-i", "--input", type=str, required=True, help="Python project directory with __main__.py application file")
+	parser.add_argument("-o", "--output", type=str, required=True, help="Output zipapp executable file")
 	args = parser.parse_args()
 
 	arg_input = args.input
@@ -89,4 +89,3 @@ if __name__ == "__main__":
 	else:
 		print("ERROR: invalid input {}. Abort.".format(arg_input), file=sys.stderr)
 		sys.exit(1)
-
