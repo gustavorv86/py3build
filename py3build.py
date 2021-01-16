@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = "Gustavo Romero Vazquez"
+__license__ = "GPL"
+__version__ = "1.0"
+__maintainer__ = "Gustavo Romero Vazquez"
+__email__ = "gustavorv86@gmail.com"
+__status__ = "Release"
 
 import argparse
 import glob
@@ -9,8 +17,8 @@ import sys
 import uuid
 import zipfile
 
-
 PROGNAME = os.path.basename(sys.argv[0]).replace(".py", "")
+
 DEFAULT_SHEBANG = "#!/usr/bin/env python3\n"
 
 
@@ -43,6 +51,23 @@ def make_binary(zip_filename, bin_filename):
 	os.chmod(bin_filename, 0o750)
 
 
+def build_from_file(main_filename: str, build_directory: str, bin_filename: str):
+	os.makedirs(build_directory, exist_ok=True)
+
+	pyc_filename = os.path.join(build_directory, os.path.basename(main_filename) + "c")
+	py_compile.compile(main_filename, pyc_filename)
+
+	zip_filename = build_directory + "_pack.zip"
+	fd_zip = zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED)
+	fd_zip.write(pyc_filename, "__main__.pyc")
+	fd_zip.close()
+
+	make_binary(zip_filename, bin_filename)
+
+	os.remove(zip_filename)
+	shutil.rmtree(build_directory, ignore_errors=True)
+
+
 def build_from_python_project(project_directory: str, build_directory: str, bin_filename: str):
 	os.makedirs(build_directory, exist_ok=True)
 
@@ -68,21 +93,22 @@ def build_from_python_project(project_directory: str, build_directory: str, bin_
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Create a zipapp from Python 3 projects")
-	parser.add_argument("-i", "--input", type=str, required=True, help="Python project directory with __main__.py application file")
-	parser.add_argument("-o", "--output", type=str, required=True, help="Output zipapp executable file")
+	parser = argparse.ArgumentParser(description="Byte compile and binary application package Python 3 source files")
+	parser.add_argument("-i", "--input", type=str, required=True, help="Input source file or pythonic project directory")
+	parser.add_argument("-o", "--output", type=str, required=True, help="Output binary application package file")
 	args = parser.parse_args()
 
 	arg_input = args.input
 	arg_output = args.output
-	
-	if os.path.isdir(arg_output):
-		progname_input = os.path.basename(arg_input)
-		arg_output += "/" + progname_input
-	
-	build_directory = "/tmp/{}_{}".format(PROGNAME, uuid.uuid4().hex)
 
-	if os.path.isdir(arg_input):
+	build_directory = "/tmp/pybuild_" + uuid.uuid4().hex
+	zip_package = build_directory + ".zip"
+
+	if os.path.isfile(arg_input):
+		main_filename = os.path.abspath(arg_input)
+		build_from_file(main_filename, build_directory, arg_output)
+
+	elif os.path.isdir(arg_input):
 		project_directory = os.path.abspath(arg_input)
 		build_from_python_project(project_directory, build_directory, arg_output)
 
