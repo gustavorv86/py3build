@@ -1,10 +1,20 @@
 # py3build
-Create python3 zip application with pyc files from python source project.
+Create Python3 zipapp with pyc files from Python3 sources.
 
 ## Usage
-Compile the sources and create the zip application file:<br>
-`./py3build -i /path/to/myapp -o myapp.bin`
+Compile the sources and create the zip application file:
+```bash
+./py3build.py -i /path/to/myapp/main.py -o myapp.bin
+```
 
 ## Run your application
-Just run the file:<br>
-`./myapp.bin`
+Just run the file:
+```bash
+./myapp.bin
+```
+
+## Troubleshooting
+
+### ModuleNotFoundError
+Create the `__init__.py` file into the module directories.
+
